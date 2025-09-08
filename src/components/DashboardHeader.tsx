@@ -1,8 +1,6 @@
-
 import { Button } from '@/components/ui/button';
 import { Bell, Eye, EyeOff, ArrowUp, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
 interface DashboardHeaderProps {
   balanceVisible: boolean;
   setBalanceVisible: (visible: boolean) => void;
@@ -11,7 +9,6 @@ interface DashboardHeaderProps {
   onUpgrade: () => void;
   onTransfer: () => void;
 }
-
 const DashboardHeader = ({
   balanceVisible,
   setBalanceVisible,
@@ -20,11 +17,11 @@ const DashboardHeader = ({
   onUpgrade,
   onTransfer
 }: DashboardHeaderProps) => {
-  const { user } = useAuth();
-
-  return (
-    <div className="mx-2">
-      <div className="bg-purple-900 text-white p-4 rounded-b-3xl">
+  const {
+    user
+  } = useAuth();
+  return <div className="mx-2">
+      <div className="bg-purple-900 text-white p-4 rounded-b-3xl mx-px my-0 px-[12px] py-[10px]">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -38,16 +35,10 @@ const DashboardHeader = ({
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Button 
-              onClick={onTransactionHistory}
-              className="bg-white/20 hover:bg-white/30 p-2 rounded-full"
-            >
+            <Button onClick={onTransactionHistory} className="bg-white/20 hover:bg-white/30 p-2 rounded-full">
               <Bell className="w-6 h-6" />
             </Button>
-            <Button 
-              onClick={onLogout}
-              className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm"
-            >
+            <Button onClick={onLogout} className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg text-sm">
               Logout
             </Button>
           </div>
@@ -63,34 +54,23 @@ const DashboardHeader = ({
               </h2>
               <p className="text-sm opacity-90">Weekly Rewards: ₦180,000.00</p>
             </div>
-            <Button
-              onClick={() => setBalanceVisible(!balanceVisible)}
-              className="bg-white/20 hover:bg-white/30 p-2 rounded-full"
-            >
+            <Button onClick={() => setBalanceVisible(!balanceVisible)} className="bg-white/20 hover:bg-white/30 p-2 rounded-full">
               {balanceVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </Button>
           </div>
 
           <div className="flex space-x-4 mt-6">
-            <Button 
-              onClick={onUpgrade}
-              className="flex-1 bg-white text-purple-600 hover:bg-gray-100 rounded-full py-3 flex items-center justify-center space-x-2"
-            >
+            <Button onClick={onUpgrade} className="flex-1 bg-white text-purple-600 hover:bg-gray-100 rounded-full py-3 flex items-center justify-center space-x-2">
               <CheckCircle className="w-5 h-5" />
               <span>Upgrade</span>
             </Button>
-            <Button 
-              onClick={onTransfer}
-              className="flex-1 bg-white text-purple-600 hover:bg-gray-100 rounded-full py-3 flex items-center justify-center space-x-2"
-            >
+            <Button onClick={onTransfer} className="flex-1 bg-white text-purple-600 hover:bg-gray-100 rounded-full py-3 flex items-center justify-center space-x-2">
               <ArrowUp className="w-5 h-5" />
               <span>Transfer</span>
             </Button>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default DashboardHeader;
