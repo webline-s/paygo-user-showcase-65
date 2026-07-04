@@ -163,6 +163,44 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
               </div>
             </div>
 
+            {/* Move to main balance */}
+            <div className="bg-white rounded-lg p-6 border">
+              <div className="flex items-center gap-2 mb-3">
+                <Wallet className="w-5 h-5 text-purple-600" />
+                <h4 className="text-lg font-bold text-gray-800">Move Bonus to Main Balance</h4>
+              </div>
+              <p className="text-sm text-gray-500 mb-3">
+                Transfer your referral earnings straight into your main balance to spend anywhere.
+              </p>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              {transferSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg p-3 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Bonus added to your main balance!
+                </div>
+              )}
+              <Button
+                onClick={handleTransferToBalance}
+                disabled={transferring || !(user?.referralBalance)}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold disabled:opacity-60"
+              >
+                {transferring ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Moving...
+                  </>
+                ) : (
+                  'Move to Main Balance'
+                )}
+              </Button>
+            </div>
+
             <Button
               onClick={() => setCurrentStep(2)}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 text-lg rounded-lg"
