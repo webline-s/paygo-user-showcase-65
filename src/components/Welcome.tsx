@@ -1,9 +1,20 @@
 
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import Celebration from './Celebration';
 
 const Welcome = () => {
-  const { user, completeWelcome } = useAuth();
+  const { user, completeWelcome, showCelebration, hideCelebration } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleContinue = () => {
+    setLoading(true);
+    setTimeout(() => {
+      completeWelcome();
+    }, 900);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-purple-500 to-orange-400 flex items-center justify-center p-4">
