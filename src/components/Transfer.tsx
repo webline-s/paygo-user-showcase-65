@@ -61,7 +61,7 @@ const Transfer = ({ onBack }: { onBack: () => void }) => {
   ];
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setTimeout>;
     if (showProcessing && countdown > 0) {
       timer = setTimeout(() => {
         setCountdown(countdown - 1);

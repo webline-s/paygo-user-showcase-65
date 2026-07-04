@@ -1,29 +1,43 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Copy, Users, DollarSign, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Copy, CheckCircle, Wallet, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (page: string) => void }) => {
-  const { user, updateReferralBalance, addTransaction } = useAuth();
+  const { user, updateReferralBalance, addTransaction, addReferralToBalance } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [payId, setPayId] = useState('');
   const [countdown, setCountdown] = useState(10);
   const [progress, setProgress] = useState(0);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [transferAmount, setTransferAmount] = useState('');
+  const [transferring, setTransferring] = useState(false);
+  const [transferSuccess, setTransferSuccess] = useState(false);
 
   const referralLink = "https://paygo-financial-pro-25.vercel.app";
   const referralMessage = `Join PayGo and start earning! Get ₦5,000 welcome bonus when you sign up using my link: ${referralLink}`;
 
-  // Auto-redirect for withdrawal processing
+  // Auto-process withdrawal
   useEffect(() => {
     if (currentStep === 4) {
       let countdownTimer = 10;
+      setProgress(0);
       const timer = setInterval(() => {
         countdownTimer--;
         setProgress((10 - countdownTimer) / 10 * 100);
         if (countdownTimer <= 0) {
           clearInterval(timer);
+          const amount = parseFloat(withdrawAmount);
+          updateReferralBalance(amount);
+          addTransaction({
+            type: 'Referral Withdrawal',
+            amount,
+            direction: 'debit',
+            status: 'Successful',
+            date: new Date().toISOString(),
+          });
           setCurrentStep(5);
         }
       }, 1000);
@@ -31,8 +45,32 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
     }
   }, [currentStep]);
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1800);
+  };
+
+  const handleTransferToBalance = () => {
+    const amt = parseFloat(transferAmount);
+    if (!amt || amt <= 0) {
+      alert('Enter a valid amount');
+      return;
+    }
+    if (amt > (user?.referralBalance || 0)) {
+      alert('Amount exceeds your referral balance');
+      return;
+    }
+    setTransferring(true);
+    setTimeout(() => {
+      const ok = addReferralToBalance(amt);
+      setTransferring(false);
+      if (ok) {
+        setTransferSuccess(true);
+        setTransferAmount('');
+        setTimeout(() => setTransferSuccess(false), 3000);
+      }
+    }, 1200);
   };
 
   const handleWithdraw = () => {
@@ -97,22 +135,22 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
                 <p className="text-sm text-gray-600 mb-2">Your referral message:</p>
                 <p className="text-gray-800 mb-3">{referralMessage}</p>
                 <Button
-                  onClick={() => handleCopy(referralMessage)}
+                  onClick={() => handleCopy(referralMessage, 'msg')}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 flex items-center justify-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
-                  <span>Copy Message</span>
+                  <span>{copied === 'msg' ? 'Copied!' : 'Copy Message'}</span>
                 </Button>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-2">Your referral link:</p>
                 <p className="text-gray-800 mb-3 break-all">{referralLink}</p>
                 <Button
-                  onClick={() => handleCopy(referralLink)}
+                  onClick={() => handleCopy(referralLink, 'link')}
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-2 flex items-center justify-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
-                  <span>Copy Link</span>
+                  <span>{copied === 'link' ? 'Copied!' : 'Copy Link'}</span>
                 </Button>
               </div>
             </div>
@@ -133,6 +171,44 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
                   <p className="text-gray-600">You earn ₦5,000 for each successful referral</p>
                 </div>
               </div>
+            </div>
+
+            {/* Move to main balance */}
+            <div className="bg-white rounded-lg p-6 border">
+              <div className="flex items-center gap-2 mb-3">
+                <Wallet className="w-5 h-5 text-purple-600" />
+                <h4 className="text-lg font-bold text-gray-800">Move Bonus to Main Balance</h4>
+              </div>
+              <p className="text-sm text-gray-500 mb-3">
+                Transfer your referral earnings straight into your main balance to spend anywhere.
+              </p>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              {transferSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg p-3 mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Bonus added to your main balance!
+                </div>
+              )}
+              <Button
+                onClick={handleTransferToBalance}
+                disabled={transferring || !(user?.referralBalance)}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-semibold disabled:opacity-60"
+              >
+                {transferring ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Moving...
+                  </>
+                ) : (
+                  'Move to Main Balance'
+                )}
+              </Button>
             </div>
 
             <Button
