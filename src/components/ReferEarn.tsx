@@ -35,8 +35,32 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
     }
   }, [currentStep]);
 
-  const handleCopy = (text: string) => {
+  const handleCopy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 1800);
+  };
+
+  const handleTransferToBalance = () => {
+    const amt = parseFloat(transferAmount);
+    if (!amt || amt <= 0) {
+      alert('Enter a valid amount');
+      return;
+    }
+    if (amt > (user?.referralBalance || 0)) {
+      alert('Amount exceeds your referral balance');
+      return;
+    }
+    setTransferring(true);
+    setTimeout(() => {
+      const ok = addReferralToBalance(amt);
+      setTransferring(false);
+      if (ok) {
+        setTransferSuccess(true);
+        setTransferAmount('');
+        setTimeout(() => setTransferSuccess(false), 3000);
+      }
+    }, 1200);
   };
 
   const handleWithdraw = () => {
