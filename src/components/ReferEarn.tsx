@@ -1,16 +1,20 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Copy, Users, DollarSign, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Copy, CheckCircle, Wallet, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (page: string) => void }) => {
-  const { user, updateReferralBalance, addTransaction } = useAuth();
+  const { user, updateReferralBalance, addTransaction, addReferralToBalance } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [payId, setPayId] = useState('');
   const [countdown, setCountdown] = useState(10);
   const [progress, setProgress] = useState(0);
+  const [copied, setCopied] = useState<string | null>(null);
+  const [transferAmount, setTransferAmount] = useState('');
+  const [transferring, setTransferring] = useState(false);
+  const [transferSuccess, setTransferSuccess] = useState(false);
 
   const referralLink = "https://paygo-financial-pro-25.vercel.app";
   const referralMessage = `Join PayGo and start earning! Get ₦5,000 welcome bonus when you sign up using my link: ${referralLink}`;
