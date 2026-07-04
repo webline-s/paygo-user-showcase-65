@@ -125,22 +125,22 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
                 <p className="text-sm text-gray-600 mb-2">Your referral message:</p>
                 <p className="text-gray-800 mb-3">{referralMessage}</p>
                 <Button
-                  onClick={() => handleCopy(referralMessage)}
+                  onClick={() => handleCopy(referralMessage, 'msg')}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 flex items-center justify-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
-                  <span>Copy Message</span>
+                  <span>{copied === 'msg' ? 'Copied!' : 'Copy Message'}</span>
                 </Button>
               </div>
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-2">Your referral link:</p>
                 <p className="text-gray-800 mb-3 break-all">{referralLink}</p>
                 <Button
-                  onClick={() => handleCopy(referralLink)}
+                  onClick={() => handleCopy(referralLink, 'link')}
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-2 flex items-center justify-center space-x-2"
                 >
                   <Copy className="w-4 h-4" />
-                  <span>Copy Link</span>
+                  <span>{copied === 'link' ? 'Copied!' : 'Copy Link'}</span>
                 </Button>
               </div>
             </div>
