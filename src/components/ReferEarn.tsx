@@ -19,15 +19,25 @@ const ReferEarn = ({ onBack, onNavigate }: { onBack: () => void; onNavigate: (pa
   const referralLink = "https://paygo-financial-pro-25.vercel.app";
   const referralMessage = `Join PayGo and start earning! Get ₦5,000 welcome bonus when you sign up using my link: ${referralLink}`;
 
-  // Auto-redirect for withdrawal processing
+  // Auto-process withdrawal
   useEffect(() => {
     if (currentStep === 4) {
       let countdownTimer = 10;
+      setProgress(0);
       const timer = setInterval(() => {
         countdownTimer--;
         setProgress((10 - countdownTimer) / 10 * 100);
         if (countdownTimer <= 0) {
           clearInterval(timer);
+          const amount = parseFloat(withdrawAmount);
+          updateReferralBalance(amount);
+          addTransaction({
+            type: 'Referral Withdrawal',
+            amount,
+            direction: 'debit',
+            status: 'Successful',
+            date: new Date().toISOString(),
+          });
           setCurrentStep(5);
         }
       }, 1000);
