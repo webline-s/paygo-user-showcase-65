@@ -1,15 +1,18 @@
 
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import Login from '../components/Login';
 import Register from '../components/Register';
 import Welcome from '../components/Welcome';
 import Dashboard from '../components/Dashboard';
-import Onboarding from '../components/Onboarding';
+import AppLoader from '../components/AppLoader';
 
 const AppContent = () => {
-  const { user, isWelcomeComplete } = useAuth();
+  const { user, isWelcomeComplete, isInitializing } = useAuth();
+
+  if (isInitializing) {
+    return <AppLoader label="Getting things ready..." />;
+  }
 
   if (!user) {
     return <AuthFlow />;

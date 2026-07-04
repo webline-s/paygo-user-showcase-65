@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface RegisterProps {
@@ -13,17 +14,22 @@ const Register = ({ onSwitchToLogin }: RegisterProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { register } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (name && email && password) {
-      const result = register(name, email, password);
-      if (!result.success && result.error) {
-        setError(result.error);
-      }
+      setLoading(true);
+      setTimeout(() => {
+        const result = register(name, email, password);
+        if (!result.success && result.error) {
+          setError(result.error);
+        }
+        setLoading(false);
+      }, 900);
     }
   };
 
@@ -96,9 +102,17 @@ const Register = ({ onSwitchToLogin }: RegisterProps) => {
 
             <Button
               type="submit"
-              className="w-full bg-black text-white py-4 text-lg font-medium rounded-xl hover:bg-gray-800 transition-colors"
+              disabled={loading}
+              className="w-full bg-black text-white py-4 text-lg font-medium rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-70"
             >
-              Register
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                'Register'
+              )}
             </Button>
           </form>
 

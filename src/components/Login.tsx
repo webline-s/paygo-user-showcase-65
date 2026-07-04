@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LoginProps {
@@ -12,21 +13,26 @@ const Login = ({ onSwitchToRegister }: LoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
     if (!email || !password) {
       setError('Please enter both email and password');
       return;
     }
-    
-    const loginSuccess = login(email, password);
-    if (!loginSuccess) {
-      setError('Invalid email or password. Please check your credentials.');
-    }
+
+    setLoading(true);
+    setTimeout(() => {
+      const loginSuccess = login(email, password);
+      if (!loginSuccess) {
+        setError('Invalid email or password. Please check your credentials.');
+      }
+      setLoading(false);
+    }, 900);
   };
 
   return (
@@ -87,9 +93,17 @@ const Login = ({ onSwitchToRegister }: LoginProps) => {
 
             <Button
               type="submit"
-              className="w-full bg-black text-white py-4 text-lg font-medium rounded-xl hover:bg-gray-800 transition-colors"
+              disabled={loading}
+              className="w-full bg-black text-white py-4 text-lg font-medium rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-70"
             >
-              Login
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                'Login'
+              )}
             </Button>
           </form>
 
